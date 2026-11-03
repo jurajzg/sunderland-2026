@@ -61,3 +61,7 @@ footer{border-top:1px solid #ffffff18;margin-top:60px;padding:22px 0;display:fle
 .ticket-row button{white-space:nowrap;padding:10px 12px}
 .ticket-empty{color:#8d9bb0;font-size:12px;padding:8px 0}
 @media(max-width:700px){.ticket-panel{padding:14px}.ticket-private-head{align-items:flex-start}.ticket-lock-button{font-size:9px;padding:9px}.ticket-row{flex-wrap:wrap}.ticket-row button{margin-left:48px}.ticket-pin-row{flex-direction:column}.ticket-pin-row button{min-height:42px}}
+
+/* Public PDF ticket links */
+.ticket-open-link{white-space:nowrap;background:#e32636;color:#fff;text-decoration:none;padding:10px 12px;font-size:10px;font-weight:800;letter-spacing:1px;display:inline-flex;align-items:center;justify-content:center}
+@media(max-width:700px){.ticket-open-link{margin-left:48px}}

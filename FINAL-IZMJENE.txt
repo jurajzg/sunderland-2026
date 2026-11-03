@@ -1,29 +1,15 @@
-SUNDERLAND 2026 – KONAČNI PAKET IZMJENA
+SUNDERLAND 2026 – POJEDNOSTAVLJENA VERZIJA
 
-ŠTO JE PROMIJENJENO
-- Dodan Cloudflare Pages Function endpoint na /api/* (functions/api/[[path]].js).
-- API koristi isti origin kao web-stranica; nema više cross-site cookie / workers.dev konfiguracije.
-- Sesijski cookie: HttpOnly, Secure, SameSite=Strict.
-- PIN provjera koristi PBKDF2-SHA256 sa soli (format pbkdf2-sha256$iteracije$sol$hash).
-- Dodana provjera Origin zaglavlja za browser POST zahtjeve.
-- Ispravljena kategorija ulaznica za Letove; API prihvaća flight, train i match.
-- Ispravljena obrada isteka blokade PIN pokušaja.
-- PDF-i ostaju u privatnom R2; ZIP ne sadrži stvarne ulaznice ni tajne.
-- Početna stranica i CSS nisu redizajnirani.
+- Uklonjena PIN prijava i API pozivi za ulaznice.
+- Uklonjena ovisnost o Cloudflare Pages Functions, Workeru, D1 i R2.
+- PDF ulaznice su statičke datoteke u public/tickets/.
+- Stranice Vlakovi, Letovi i Utakmica prikazuju izravne PDF poveznice po putniku.
+- Dodane su četiri željezničke karte: dvije za Jurja i dvije za Bucu.
+- PDF-ovi za letove i utakmicu mogu se dodati naknadno.
+- Dizajn početne stranice i CSS izgled ostaju sačuvani; dodani su samo stilovi za PDF poveznice.
 
-OBAVEZNO PRIJE KORIŠTENJA
-1. Zamijeni sadržaj repozitorija ovim paketom i pushaj na main.
-2. U Cloudflare Pages dodaj D1 binding DB i R2 binding BUCKET.
-3. U Pages Secrets dodaj TICKET_PIN_HASH i ADMIN_TOKEN_HASH; u Variables dodaj ALLOWED_ORIGIN.
-4. Primijeni D1 migracije ako tablice već ne postoje.
-5. Provjeri /api/health i napravi testove iz README.md.
-6. Tek nakon uspješnih testova učitaj PDF-ove administratorskom skriptom.
+VAŽNO: PDF-ovi su javno dostupni svakome tko zna ili pronađe njihovu URL adresu.
+Ne stavljati osjetljive dokumente u public/tickets/.
 
-STATUS PROVJERA U OVOM OKRUŽENJU
-- Node sintaksne provjere Worker, Pages Function i upload skripte: PROŠLE.
-- API smoke testovi (health, Origin zaštita, blokada privatnog popisa bez sesije): PROŠLI.
-- PBKDF2 kompatibilnost s Node/WebCrypto: PROVJERENA.
-- npm install/build i Vitest: NISU IZVRŠENI jer npm registry nije dostupan (EAI_AGAIN).
-- Produkcijski Cloudflare D1/R2 bindingi, preglednički PIN testovi i stvarni PDF upload: NISU IZVRŠENI.
-
-Ovaj paket je pripremljen za postavljanje, ali nije dokaz da su produkcijski resursi već konfigurirani ili sigurnosno testirani.
+Cloudflare Pages: build command `npm run build`, output directory `dist`.
+Nisu potrebni D1/R2 bindingi ni PIN/admin tajne.

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Menu, X, Plane, TrainFront, BedDouble, Ticket, CalendarDays,
-  Utensils, CloudSun, ShieldCheck, Lock, ExternalLink, CloudRain,
+  Utensils, CloudSun, ShieldCheck, ExternalLink, CloudRain,
   Cloud, Sun, Wind, Droplets, MapPin
 } from 'lucide-react';
 import { trip, flights, trains, itinerary, pubs } from '../data';
@@ -16,7 +16,7 @@ const icons = {
   match: Ticket, plan: CalendarDays, pubs: Utensils, weather: CloudSun
 };
 
-const MATCH_DATE = new Date('2026-11-05T20:00:00+00:00');
+const MATCH_DATE = new Date('2026-11-05T21:00:00+00:00');
 const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast?latitude=54.9069&longitude=-1.3838&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=Europe%2FLondon&start_date=2026-11-05&end_date=2026-11-06';
 
 function useCountdown() {
@@ -128,7 +128,7 @@ function App() {
             <div className="hero-match-content">
               <div className="pill">ZAGREB → SUNDERLAND · 5. STUDENOGA 2026.</div>
               <h1>SUNDERLAND <em>VS</em><br className="hero-break"/> DINAMO ZAGREB</h1>
-              <p><MapPin size={14}/> Stadium of Light, Sunderland · 5. studenoga 2026. · 20:00 (UK vrijeme)</p>
+              <p><MapPin size={14}/> Stadium of Light, Sunderland · 5. studenoga 2026. · 21:00 (UK vrijeme)</p>
               <div className="countdown" aria-label="Odbrojavanje do utakmice">
                 {countdown.finished ? <div className="countdown-finished">UTAKMICA JE POČELA</div> : <>
                   <div><strong>{String(countdown.days).padStart(2, '0')}</strong><small>DANA</small></div>
@@ -143,7 +143,7 @@ function App() {
             <Info title="Letovi" text="4 leta" icon={<Plane/>} click={() => setPage('flights')}/>
             <Info title="Vlakovi" text="3 dionice" icon={<TrainFront/>} click={() => setPage('trains')}/>
             <Info title="Smještaj" text={trip.accommodation} icon={<BedDouble/>} click={() => setPage('stay')}/>
-            <Info title="Utakmica" text="20:00 · 5.11." icon={<Ticket/>} click={() => setPage('match')}/>
+            <Info title="Utakmica" text="21:00 · 5.11." icon={<Ticket/>} click={() => setPage('match')}/>
           </div>
           <WeatherSummary/>
           <section className="section home-more">
@@ -154,7 +154,7 @@ function App() {
         {page === 'flights' && <Section title="Letovi" sub="ČETIRI LETA · DVA PUTNIKA"><p className="notice warn">Važno: Dublin 5. 11. je presjedanje na odvojenim rezervacijama. Razmak je 2 h 10 min, bez predane prtljage. Odmah nakon slijetanja krenite prema sljedećem letu; kašnjenje prvog leta može ugroziti vezu.</p><Table heads={['Datum','Let','Od','Do','Polazak','Dolazak','Putnici']} rows={flights}/><p className="muted">Cilj dolaska u zračnu luku: 90 minuta prije polaska. Ukrcajne propusnice dodaju se nakon check-ina.</p><TicketAccess category="flight"/></Section>
         {page === 'trains' && <Section title="Vlakovi" sub="ČETVRTAK · 5. STUDENOGA"><Table heads={['Prijevoznik','Od','Do','Polazak','Dolazak','Napomena']} rows={trains.map(r => [r[5],r[1],r[2],r[3],r[4],r[5].includes('LNER') ? 'Coach H · Juraj 66 · Buco 65' : ''])}/><p className="muted">Ulaznice: po dvije PDF datoteke za svaku osobu (Edinburgh Gateway–Newcastle i Newcastle–Sunderland).</p><TicketAccess category="train"/></Section>}
         {page === 'stay' && <Section title="Smještaj" sub="SUNDERLAND · CITY"><div className="feature"><div><div className="eyebrow">OUR BASE</div><h3>{trip.accommodation}</h3><p>{trip.address}</p><a className="text-link" href={trip.map} target="_blank" rel="noreferrer">OTVORI NA GOOGLE MAPS <ExternalLink size={14}/></a></div><BedDouble size={60}/></div><p className="muted">Plan: prvo odlazak u apartman, ostavljanje prtljage i kratki odmor, zatim polazak prema stadionu.</p></Section>}
-        {page === 'match' && <Section title="Utakmica" sub="MATCHDAY · 05.11.2026"><div className="match-card"><div className="team">SUNDERLAND</div><div className="versus">VS</div><div className="team dinamo">DINAMO<br/>ZAGREB</div><div className="match-meta">STADIUM OF LIGHT · 20:00 · ČETVRTAK</div></div><TicketAccess category="match"/></Section>}
+        {page === 'match' && <Section title="Utakmica" sub="MATCHDAY · 05.11.2026"><div className="match-card"><div className="team">SUNDERLAND</div><div className="versus">VS</div><div className="team dinamo">DINAMO<br/>ZAGREB</div><div className="match-meta">STADIUM OF LIGHT · 21:00 · ČETVRTAK</div></div><TicketAccess category="match"/></Section>}
         {page === 'plan' && <Section title="Plan putovanja" sub="ČETVRTAK · 5. STUDENOGA"><div className="timeline">{itinerary.map((x,i) => <div className="event" key={i}><b>{x[0]}</b><div><strong>{x[1]}</strong><p>{x[2]}</p></div></div>)}</div><div className="notice">Petak, 6. 11.: povratak iz Newcastlea. Let FR21 polazi u 14:55, a FR2192 iz Dublina u 19:15.</div></Section>}
         {page === 'pubs' && <Section title="Pubovi i restorani" sub="FOOD · DRINK · MATCHDAY">{pubs.map(p => <div className="feature" key={p.name}><div><h3>{p.name}</h3><p>{p.desc}</p></div><Utensils size={34}/></div>)}</Section>}
         {page === 'weather' && <Section title="Vrijeme" sub="SUNDERLAND · 5–6.11.2026"><WeatherSummary/></Section>}
@@ -169,63 +169,33 @@ function Info({ title, text, icon, click }) {
 function Section({ title, sub, children }) {
   return <section className="section page-section"><div className="eyebrow">{sub}</div><h2>{title}</h2>{children}</section>;
 }
-const API_BASE = '';
+const PUBLIC_TICKETS = {
+  train: {
+    Juraj: [
+      { filename: 'Edinburgh Gateway – Newcastle.pdf', url: '/tickets/Juraj-Edinburgh-Gateway-Newcastle.pdf' },
+      { filename: 'Newcastle – Sunderland.pdf', url: '/tickets/Juraj-Newcastle-Sunderland.pdf' }
+    ],
+    Buco: [
+      { filename: 'Edinburgh Gateway – Newcastle.pdf', url: '/tickets/Buco-Edinburgh-Gateway-Newcastle.pdf' },
+      { filename: 'Newcastle – Sunderland.pdf', url: '/tickets/Buco-Newcastle-Sunderland.pdf' }
+    ]
+  },
+  flight: { Juraj: [], Buco: [] },
+  match: {
+    Juraj: [{ filename: 'Sunderland – Dinamo · Juraj.pdf', url: '/tickets/Sunderland-Dinamo-Juraj.pdf' }],
+    Buco: [{ filename: 'Sunderland – Dinamo · Buco.pdf', url: '/tickets/Sunderland-Dinamo-Buco.pdf' }]
+  }
+};
 function TicketAccess({ category }) {
-  const [pin, setPin] = useState('');
-  const [unlocked, setUnlocked] = useState(false);
-  const [tickets, setTickets] = useState([]);
-  const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState('Juraj');
-  const [opening, setOpening] = useState(null);
-
-  async function refresh() {
-    const response = await fetch(`${API_BASE}/api/tickets`, { credentials: 'include' });
-    if (!response.ok) throw new Error(response.status === 401 ? 'Sesija je istekla. Ponovno unesite PIN.' : 'Nije moguće dohvatiti ulaznice.');
-    const data = await response.json();
-    setTickets(data.tickets.filter(t => t.category === category));
-  }
-  async function unlock(event) {
-    event.preventDefault(); setBusy(true); setError('');
-    try {
-      const response = await fetch(`${API_BASE}/api/unlock`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin }) });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'PIN nije prihvaćen.');
-      setUnlocked(true); setPin(''); await refresh();
-    } catch (e) { setError(e.message || 'Greška povezivanja.'); }
-    finally { setBusy(false); }
-  }
-  async function lock() {
-    try { await fetch(`${API_BASE}/api/lock`, { method: 'POST', credentials: 'include' }); } catch {}
-    setUnlocked(false); setTickets([]); setOpening(null);
-  }
-  async function openTicket(ticket) {
-    setOpening(ticket.id); setError('');
-    try {
-      const response = await fetch(`${API_BASE}/api/tickets/${ticket.id}`, { credentials: 'include' });
-      if (!response.ok) throw new Error(response.status === 401 ? 'Sesija je istekla. Ponovno unesite PIN.' : 'PDF nije moguće otvoriti.');
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = objectUrl; link.target = '_blank'; link.rel = 'noopener noreferrer';
-      link.click();
-      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
-    } catch (e) { setError(e.message); if (String(e.message).includes('istekla')) { setUnlocked(false); setTickets([]); } }
-    finally { setOpening(null); }
-  }
-  const visible = tickets.filter(t => t.person === selectedPerson);
+  const tickets = PUBLIC_TICKETS[category]?.[selectedPerson] || [];
   const categoryLabel = category === 'train' ? 'VLAKOVI' : category === 'flight' ? 'LETOVI' : 'UTAKMICA';
   return <div className="ticket-panel">
-    {!unlocked ? <form className="ticket-unlock" onSubmit={unlock}>
-      <div className="ticket-lock"><Lock/></div><div className="ticket-unlock-copy"><b>Privatne ulaznice · {categoryLabel}</b><p>Unesite zajednički PIN za pristup PDF ulaznicama.</p></div>
-      <div className="ticket-pin-row"><input aria-label="PIN za ulaznice" type="password" inputMode="numeric" autoComplete="off" value={pin} onChange={e => setPin(e.target.value)} placeholder="Unesite PIN" maxLength={64}/><button type="submit" disabled={busy || !pin}>{busy ? 'PROVJERA…' : 'OTKLJUČAJ'}</button></div>
-      {error && <p className="ticket-error" role="alert">{error}</p>}
-    </form> : <div className="ticket-private">
-      <div className="ticket-private-head"><div><b>Ulaznice su otključane</b><p>Pristup se automatski zaključava nakon 15 minuta neaktivnosti.</p></div><button className="ticket-lock-button" onClick={lock}><Lock size={14}/> ZAKLJUČAJ</button></div>
+    <div className="ticket-private">
+      <div className="ticket-private-head"><div><b>PDF ulaznice · {categoryLabel}</b><p>Odaberite putnika i otvorite svoju PDF ulaznicu.</p></div></div>
       <div className="ticket-person-tabs"><button className={selectedPerson === 'Juraj' ? 'active' : ''} onClick={() => setSelectedPerson('Juraj')}>JURAJ</button><button className={selectedPerson === 'Buco' ? 'active' : ''} onClick={() => setSelectedPerson('Buco')}>BUCO</button></div>
-      {visible.length ? <div className="ticket-list">{visible.map(ticket => <div className="ticket-row" key={ticket.id}><div className="ticket-file-icon"><Ticket size={18}/></div><div className="ticket-file-name"><b>{ticket.filename}</b><small>{ticket.person} · {categoryLabel}</small></div><button onClick={() => openTicket(ticket)} disabled={opening === ticket.id}>{opening === ticket.id ? 'OTVARANJE…' : 'OTVORI PDF ↗'}</button></div>)}</div> : <p className="ticket-empty">Još nema učitanih ulaznica za {selectedPerson}.</p>}
-      {error && <p className="ticket-error" role="alert">{error}</p>}
-    </div>}
+      {tickets.length ? <div className="ticket-list">{tickets.map(ticket => <div className="ticket-row" key={ticket.url}><div className="ticket-file-icon"><Ticket size={18}/></div><div className="ticket-file-name"><b>{ticket.filename}</b><small>{selectedPerson} · {categoryLabel}</small></div><a className="ticket-open-link" href={ticket.url} target="_blank" rel="noopener noreferrer">OTVORI PDF ↗</a></div>)}</div> : <p className="ticket-empty">PDF ulaznice za {selectedPerson} još nisu dodane.</p>}
+    </div>
   </div>;
 }
 export default App;
