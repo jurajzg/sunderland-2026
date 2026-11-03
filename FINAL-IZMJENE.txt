@@ -1,0 +1,15 @@
+SUNDERLAND 2026 – POJEDNOSTAVLJENA VERZIJA
+
+- Uklonjena PIN prijava i API pozivi za ulaznice.
+- Uklonjena ovisnost o Cloudflare Pages Functions, Workeru, D1 i R2.
+- PDF ulaznice su statičke datoteke u public/tickets/.
+- Stranice Vlakovi, Letovi i Utakmica prikazuju izravne PDF poveznice po putniku.
+- Dodane su četiri željezničke karte: dvije za Jurja i dvije za Bucu.
+- PDF-ovi za letove i utakmicu mogu se dodati naknadno.
+- Dizajn početne stranice i CSS izgled ostaju sačuvani; dodani su samo stilovi za PDF poveznice.
+
+VAŽNO: PDF-ovi su javno dostupni svakome tko zna ili pronađe njihovu URL adresu.
+Ne stavljati osjetljive dokumente u public/tickets/.
+
+Cloudflare Pages: build command `npm run build`, output directory `dist`.
+Nisu potrebni D1/R2 bindingi ni PIN/admin tajne.

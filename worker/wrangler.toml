@@ -13,4 +13,5 @@ binding = "BUCKET"
 bucket_name = "sunderland-tickets"
 
 [vars]
-ALLOWED_ORIGIN = "http://localhost:5173"
+# Replace with the exact deployed Pages origin; do not use '*'.
+ALLOWED_ORIGIN = "https://sunderland-2026.pages.dev"

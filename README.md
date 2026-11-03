@@ -1,60 +1,38 @@
 # SUNDERLAND 2026
 
-Privatna, hrvatska travel web-aplikacija za putovanje 5.–6. 11. 2026.
-Frontend: Vite + React. Backend: Cloudflare Worker + D1 + R2.
-Namjerno nema stvarnih ulaznica, PIN-a ni tajni.
+Privatna hrvatska travel web-aplikacija za putovanje 5.–6. 11. 2026. Frontend je Vite + React, a stranica se objavljuje putem Cloudflare Pages.
 
-## Lokalno pokretanje (Windows)
+## Ulaznice
 
-Potrebni su Node.js LTS i npm.
+PDF ulaznice nalaze se u `public/tickets/` i prikazuju se na stranicama Letovi, Vlakovi i Utakmica. Trenutačno su dodane četiri željezničke karte za Jurja i Bucu. PDF-ovi za letove i utakmicu mogu se dodati naknadno u istu mapu, uz ažuriranje popisa u `src/ui/App.jsx`.
+
+**Važno:** ulaznice su javne. Svatko tko zna ili pronađe izravnu adresu PDF-a može ga otvoriti. Nemojte u ovu mapu stavljati dokumente koje želite zaštititi.
+
+## Lokalno pokretanje
 
 ```powershell
 npm install
 npm run dev
-```
-
-Otvori adresu koju Vite ispiše (obično http://localhost:5173).
-
-## Testovi
-
-```powershell
 npm test
+npm run build
 ```
 
-Ovi testovi provjeravaju osnovne funkcije i prikaz. Sigurnosni testovi backend-a zahtijevaju lokalni Cloudflare Wrangler i konfiguriranu testnu bazu/R2.
+## Cloudflare Pages
 
-## Cloudflare lokalni backend
+- GitHub repozitorij: `jurajzg/sunderland-2026`
+- Production branch: `main`
+- Build command: `npm run build`
+- Build output directory: `dist`
 
-```powershell
-npm install
-npx wrangler d1 migrations apply sunderland-db --local
-npx wrangler dev
-```
+Za ovu pojednostavljenu verziju nisu potrebni Cloudflare Worker, Pages Functions, D1, R2 ni tajne/varijable za PIN. PDF-ovi iz `public/tickets/` automatski se kopiraju u `dist/tickets/` pri izgradnji.
 
-Frontend je zasebno na Vite dev serveru. Za povezivanje lokalnog frontenda s Workerom postavi `VITE_API_BASE=http://127.0.0.1:8787` u `.env.local`.
+## Dodavanje novih PDF-ova
 
-## Cloudflare produkcija
+1. Stavite PDF u `public/tickets/`.
+2. Dodajte osobu, naziv i URL u `PUBLIC_TICKETS` u `src/ui/App.jsx` pod odgovarajuću kategoriju (`flight`, `train` ili `match`).
+3. Commitajte promjene na radnu granu i provjerite deploy preview prije spajanja s `main`.
 
-1. Kreiraj D1 bazu `sunderland-db`.
-2. Kreiraj privatni R2 bucket `sunderland-tickets`.
-3. Postavi Worker secrets: `TICKET_PIN_HASH`, `ADMIN_TOKEN_HASH`, `SESSION_SECRET`.
-4. Poveži D1 i R2 bindinge prema `wrangler.toml`.
-5. Primijeni migracije: `npx wrangler d1 migrations apply sunderland-db --remote`.
-6. Deploy: `npx wrangler deploy`.
-7. Frontend deployaj na Cloudflare Pages i postavi `VITE_API_BASE` na Worker URL.
 
-**Važno:** Ovo je početni projekt koji se mora lokalno testirati i dovršiti prije objave. Ne stavljati stvarne PDF ulaznice dok produkcijski testovi ne prođu. Nemoj koristiti kratki ili predvidljivi PIN. Preporuka: najmanje 8 nasumičnih znamenki.
+## Javne PDF ulaznice
 
-## Sigurnosni model
-
-- Javni PIN služi samo za čitanje ulaznica.
-- Administracija koristi zaseban tajni token (ne isti PIN).
-- PDF-ovi su u privatnom R2 bucketu i poslužuju se samo nakon provjere sesije.
-- Sesije se čuvaju u D1; zaključavanje opoziva samo trenutačnu sesiju.
-- 15 minuta neaktivnosti; promjena PIN hash konfiguracije opoziva stare sesije.
-- Rate limiting je po IP-u u D1, s atomskim UPSERT brojačem.
-- Cloudflare Worker koristi `CF-Connecting-IP`; ne vjeruje `X-Forwarded-For`.
-- Prije javne objave treba dodati/konfigurirati Cloudflare Turnstile ili drugi anti-bot sloj ako prijetnje to opravdavaju.
-
-Za početnu verziju administratorski endpointi zahtijevaju `Authorization: Bearer <ADMIN_TOKEN>` i hash tokena uspoređuje se na serveru. Admin token nikada ne smije biti u frontend kodu.
-Deployment trigger – November 2026
+Željezničke i utakmične PDF ulaznice nalaze se u `public/tickets/` i dostupne su bez PIN-a. Svatko tko zna ili pronađe URL može ih otvoriti. Za utakmicu su dodane datoteke `Sunderland-Dinamo-Juraj.pdf` i `Sunderland-Dinamo-Buco.pdf`. Vrijeme početka na ulaznicama je 21:00 po lokalnom vremenu u Sunderlandu; prikaz na web-stranici usklađen je s ulaznicama.
