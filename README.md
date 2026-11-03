@@ -57,3 +57,4 @@ Frontend je zasebno na Vite dev serveru. Za povezivanje lokalnog frontenda s Wor
 - Prije javne objave treba dodati/konfigurirati Cloudflare Turnstile ili drugi anti-bot sloj ako prijetnje to opravdavaju.
 
 Za početnu verziju administratorski endpointi zahtijevaju `Authorization: Bearer <ADMIN_TOKEN>` i hash tokena uspoređuje se na serveru. Admin token nikada ne smije biti u frontend kodu.
+Deployment trigger – November 2026
