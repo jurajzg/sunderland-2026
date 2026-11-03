@@ -16,7 +16,7 @@ const icons = {
   match: Ticket, plan: CalendarDays, pubs: Utensils, weather: CloudSun
 };
 
-const MATCH_DATE = new Date('2026-11-05T21:00:00+00:00');
+const MATCH_DATE = new Date('2026-11-05T20:00:00+00:00');
 const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast?latitude=54.9069&longitude=-1.3838&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=Europe%2FLondon&start_date=2026-11-05&end_date=2026-11-06';
 
 function useCountdown() {
