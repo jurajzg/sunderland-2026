@@ -35,3 +35,29 @@ main{padding:34px 5% 24px;min-width:0}.eyebrow span{color:#e32636;margin:0 8px}
 footer{border-top:1px solid #ffffff18;margin-top:60px;padding:22px 0;display:flex;justify-content:space-between;color:#64748a;font-size:9px;letter-spacing:2px}.mobile-menu{display:none;background:none;border:0;color:white}
 @media(max-width:1050px){.shell{grid-template-columns:190px 1fr}aside{padding:30px 14px}main{padding:28px 3%}.home-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-match h1{font-size:clamp(42px,7vw,72px)}}
 @media(max-width:700px){header{height:68px;padding:0 16px}.mobile-menu{display:block}.brand{font-size:12px;letter-spacing:1px}.crest{width:30px;height:35px;font-size:22px}.header-date{font-size:9px;letter-spacing:1px}.shell{display:block;min-height:calc(100vh - 68px)}aside{display:none;position:absolute;z-index:20;top:68px;left:0;right:0;background:#080d18;border-bottom:1px solid #ffffff20;padding:18px;box-shadow:0 12px 25px #0008}.shell aside.open{display:flex}.side-note{display:none}main{padding:22px 14px}.hero-match{min-height:390px;padding:30px 20px;border-radius:20px;background-position:center}.hero-match h1{font-size:clamp(39px,11vw,65px);letter-spacing:-.5px}.hero-match p{font-size:11px;line-height:1.6;align-items:flex-start}.countdown{gap:6px}.countdown>div{width:calc((100vw - 76px)/4);max-width:82px;height:72px;border-radius:16px}.countdown strong{font-size:29px}.countdown small{font-size:8px}.home-shortcuts{gap:8px;margin-top:14px}.info-card{padding:12px 10px;min-height:88px;border-radius:17px;gap:9px}.info-card>span{width:34px;height:34px;flex-basis:34px}.info-card>span svg{width:17px;height:17px}.info-card b{font-size:15px}.info-card small{font-size:9px;max-width:105px}.home-weather{margin-top:14px;padding:15px;border-radius:18px}.home-weather-head{margin-bottom:12px}.home-weather-head h2{font-size:19px}.weather-days{grid-template-columns:1fr;gap:8px}.weather-day{padding:13px;border-radius:15px}.weather-symbol{flex-basis:38px}.weather-symbol svg{width:36px;height:36px}.weather-detail strong{font-size:27px}.weather-detail span{font-size:9px}.section{margin-top:32px}.section h2{font-size:32px}.page-section h2{font-size:40px}.feature{padding:20px}.match-card{gap:14px;min-height:190px}.team{font-size:clamp(22px,7vw,36px)}.match-meta{font-size:8px;letter-spacing:1px}.ticket-box{align-items:flex-start;flex-wrap:wrap}.status{margin-left:53px}.event{grid-template-columns:70px 1fr;gap:12px}footer{margin-top:38px;gap:12px;flex-wrap:wrap;font-size:8px}}
+
+/* Private ticket access */
+.ticket-panel{margin-top:22px;border:1px solid #ffffff20;background:#0b1422;padding:18px}
+.ticket-unlock{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:center}
+.ticket-unlock-copy b,.ticket-private-head b{font:700 20px 'Barlow Condensed';color:#fff}
+.ticket-unlock-copy p,.ticket-private-head p{font-size:11px;color:#8997aa;margin:4px 0 0;line-height:1.6}
+.ticket-pin-row{grid-column:1/-1;display:flex;gap:10px;margin-top:5px}
+.ticket-pin-row input{min-width:0;flex:1;background:#111d30;border:1px solid #ffffff25;color:#fff;padding:12px 14px;font:inherit;letter-spacing:2px;outline:none}
+.ticket-pin-row input:focus{border-color:#e32636}
+.ticket-pin-row button,.ticket-row button,.ticket-lock-button{background:#e32636;color:#fff;border:0;padding:11px 15px;font-size:10px;font-weight:800;letter-spacing:1px;cursor:pointer}
+.ticket-pin-row button:disabled,.ticket-row button:disabled{opacity:.55;cursor:wait}
+.ticket-error{grid-column:1/-1;color:#ff8b92;font-size:11px;margin:0}
+.ticket-private-head{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.ticket-lock-button{display:flex;align-items:center;gap:7px;background:#1a2638;border:1px solid #ffffff25;white-space:nowrap}
+.ticket-person-tabs{display:flex;gap:8px;margin:18px 0 12px;border-bottom:1px solid #ffffff20}
+.ticket-person-tabs button{background:transparent;border:0;color:#8d9bb0;padding:10px 16px;font-size:11px;font-weight:800;letter-spacing:1.2px;cursor:pointer;border-bottom:2px solid transparent}
+.ticket-person-tabs button.active{color:#fff;border-bottom-color:#e32636}
+.ticket-list{display:grid;gap:8px}
+.ticket-row{display:flex;align-items:center;gap:12px;background:#111d30;padding:12px}
+.ticket-file-icon{width:36px;height:36px;display:grid;place-items:center;background:#ffffff0c;color:#e32636;flex:0 0 auto}
+.ticket-file-name{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}
+.ticket-file-name b{font-size:12px;color:#e6ebf3;overflow-wrap:anywhere}
+.ticket-file-name small{font-size:9px;color:#8291a7;letter-spacing:1px}
+.ticket-row button{white-space:nowrap;padding:10px 12px}
+.ticket-empty{color:#8d9bb0;font-size:12px;padding:8px 0}
+@media(max-width:700px){.ticket-panel{padding:14px}.ticket-private-head{align-items:flex-start}.ticket-lock-button{font-size:9px;padding:9px}.ticket-row{flex-wrap:wrap}.ticket-row button{margin-left:48px}.ticket-pin-row{flex-direction:column}.ticket-pin-row button{min-height:42px}}

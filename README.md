@@ -1,60 +1,71 @@
 # SUNDERLAND 2026
 
-Privatna, hrvatska travel web-aplikacija za putovanje 5.–6. 11. 2026.
-Frontend: Vite + React. Backend: Cloudflare Worker + D1 + R2.
-Namjerno nema stvarnih ulaznica, PIN-a ni tajni.
+Privatna hrvatska travel web-aplikacija za putovanje 5.–6. 11. 2026. Frontend je Vite + React, a zaštićeni API radi kao **Cloudflare Pages Function na istoj domeni**. Metapodaci su u D1, PDF ulaznice u privatnom R2 bucketu.
 
-## Lokalno pokretanje (Windows)
-
-Potrebni su Node.js LTS i npm.
+## Lokalno pokretanje
 
 ```powershell
 npm install
 npm run dev
-```
-
-Otvori adresu koju Vite ispiše (obično http://localhost:5173).
-
-## Testovi
-
-```powershell
 npm test
+npm run build
 ```
 
-Ovi testovi provjeravaju osnovne funkcije i prikaz. Sigurnosni testovi backend-a zahtijevaju lokalni Cloudflare Wrangler i konfiguriranu testnu bazu/R2.
+## Cloudflare Pages – obavezna konfiguracija
 
-## Cloudflare lokalni backend
+1. GitHub repozitorij ostaje povezan s Cloudflare Pages projektom. Build command: `npm run build`; output directory: `dist`.
+2. U Pages projektu otvori **Settings → Functions → D1 database bindings** i dodaj binding `DB` na bazu `sunderland-db`.
+3. U **R2 bucket bindings** dodaj binding `BUCKET` na privatni bucket `sunderland-tickets`. Ne uključuj Public Development URL ni public access.
+4. U **Settings → Variables and Secrets** dodaj:
+   - `ALLOWED_ORIGIN` = točna javna adresa Pages web-stranice, npr. `https://sunderland-2026.pages.dev`
+   - `TICKET_PIN_HASH` = PBKDF2 hash PIN-a u formatu opisanom niže (kao Secret)
+   - `ADMIN_TOKEN_HASH` = SHA-256 hash zasebnog, dugog administratorskog tokena (kao Secret)
+5. Za D1 primijeni SQL migracije iz `worker/migrations/0001_init.sql` i `worker/migrations/0002_ticket_indexes.sql` putem Cloudflare D1 konzole ili Wrangler CLI-ja. Ako je baza već inicijalizirana, provjeri postoje li tablice i indeksi prije ponovnog izvršavanja.
+6. Nakon svakog ažuriranja provjeri `https://TVOJA-PAGES-ADRESA/api/health` – treba vratiti `{"ok":true,"service":"sunderland-2026"}`.
+
+**Važno:** više se ne koristi zaseban `workers.dev` API niti varijabla `VITE_API_BASE`. Frontend i API su na istoj domeni. To uklanja problem third-party kolačića.
+
+## Sigurno generiranje tajni (lokalno na Windowsu)
+
+Nemoj slati PIN ili administratorski token u chat i nemoj ih spremati u GitHub.
+
+Za PIN pokreni PowerShell iz korijena projekta. Ova naredba generira slučajnu sol i PBKDF2-SHA256 hash (310.000 iteracija):
 
 ```powershell
-npm install
-npx wrangler d1 migrations apply sunderland-db --local
-npx wrangler dev
+node --input-type=module -e "import {pbkdf2Sync,randomBytes} from 'node:crypto'; const pin=process.argv[1]; const salt=randomBytes(16); const hash=pbkdf2Sync(pin,salt,310000,32,'sha256'); console.log('pbkdf2-sha256$310000$'+salt.toString('hex')+'$'+hash.toString('hex'))" "TVOJ_PIN"
 ```
 
-Frontend je zasebno na Vite dev serveru. Za povezivanje lokalnog frontenda s Workerom postavi `VITE_API_BASE=http://127.0.0.1:8787` u `.env.local`.
+Za administratorski token generiraj zasebnu nasumičnu vrijednost i spremi je u password manager. Hashiraj token:
 
-## Cloudflare produkcija
+```powershell
+node -e "const c=require('crypto'); process.stdout.write(c.createHash('sha256').update(process.argv[1]).digest('hex'))" "TVOJ_DUGI_ADMIN_TOKEN"
+```
 
-1. Kreiraj D1 bazu `sunderland-db`.
-2. Kreiraj privatni R2 bucket `sunderland-tickets`.
-3. Postavi Worker secrets: `TICKET_PIN_HASH`, `ADMIN_TOKEN_HASH`, `SESSION_SECRET`.
-4. Poveži D1 i R2 bindinge prema `wrangler.toml`.
-5. Primijeni migracije: `npx wrangler d1 migrations apply sunderland-db --remote`.
-6. Deploy: `npx wrangler deploy`.
-7. Frontend deployaj na Cloudflare Pages i postavi `VITE_API_BASE` na Worker URL.
+U Cloudflare spremi hash kao Secret, a stvarni admin token koristi samo lokalno za učitavanje PDF-ova.
 
-**Važno:** Ovo je početni projekt koji se mora lokalno testirati i dovršiti prije objave. Ne stavljati stvarne PDF ulaznice dok produkcijski testovi ne prođu. Nemoj koristiti kratki ili predvidljivi PIN. Preporuka: najmanje 8 nasumičnih znamenki.
+## Učitavanje PDF ulaznica
 
-## Sigurnosni model
+PDF-ovi se **ne spremaju u GitHub**, `public/` ni frontend bundle. Nakon konfiguracije Pages bindinga i tajni koristi administratorsku skriptu s lokalnog računala:
 
-- Javni PIN služi samo za čitanje ulaznica.
-- Administracija koristi zaseban tajni token (ne isti PIN).
-- PDF-ovi su u privatnom R2 bucketu i poslužuju se samo nakon provjere sesije.
-- Sesije se čuvaju u D1; zaključavanje opoziva samo trenutačnu sesiju.
-- 15 minuta neaktivnosti; promjena PIN hash konfiguracije opoziva stare sesije.
-- Rate limiting je po IP-u u D1, s atomskim UPSERT brojačem.
-- Cloudflare Worker koristi `CF-Connecting-IP`; ne vjeruje `X-Forwarded-For`.
-- Prije javne objave treba dodati/konfigurirati Cloudflare Turnstile ili drugi anti-bot sloj ako prijetnje to opravdavaju.
+```powershell
+$env:API_BASE="https://TVOJA-PAGES-ADRESA"
+$env:ADMIN_TOKEN="TVOJ_ADMIN_TOKEN"
+node scripts/upload-ticket.mjs Juraj train "C:\putanja\Juraj-Edinburgh-Newcastle.pdf" "Edinburgh Gateway – Newcastle.pdf"
+node scripts/upload-ticket.mjs Juraj train "C:\putanja\Juraj-Newcastle-Sunderland.pdf" "Newcastle – Sunderland.pdf"
+node scripts/upload-ticket.mjs Buco train "C:\putanja\Buco-Edinburgh-Newcastle.pdf" "Edinburgh Gateway – Newcastle.pdf"
+node scripts/upload-ticket.mjs Buco train "C:\putanja\Buco-Newcastle-Sunderland.pdf" "Newcastle – Sunderland.pdf"
+```
 
-Za početnu verziju administratorski endpointi zahtijevaju `Authorization: Bearer <ADMIN_TOKEN>` i hash tokena uspoređuje se na serveru. Admin token nikada ne smije biti u frontend kodu.
-Deployment trigger – November 2026
+Za utakmicu koristi kategoriju `match`, a za buduće avionske karte `flight`. Maksimalna veličina PDF-a je 5 MB.
+
+## Sigurnosne značajke i provjere
+
+- PDF objekti pohranjuju se u privatni R2; API ih vraća samo nakon provjere aktivne sesije.
+- PIN se provjerava PBKDF2-SHA256 derivacijom sa slučajnom soli, ne običnim SHA-256 hashom.
+- Sesijski kolačić je `HttpOnly`, `Secure`, `SameSite=Strict`; API i stranica su isti origin.
+- Sesija istječe nakon 15 minuta neaktivnosti; gumb zaključavanja opoziva sesiju na serveru.
+- Pet neuspješnih pokušaja s iste IP adrese aktivira blokadu od 15 minuta.
+- Administratorski token je odvojen od PIN-a; API provjerava njegov hash.
+- Promjena `TICKET_PIN_HASH` automatski poništava stare sesije pri sljedećem API zahtjevu.
+
+Prije učitavanja stvarnih ulaznica obavezno testirati u produkcijskom pregledniku: ispravan i pogrešan PIN, pet pogrešnih pokušaja, izričito zaključavanje, istek nakon 15 minuta, direktan `/api/tickets/ID` bez kolačića, admin upload i brisanje te ponašanje na mobitelu. ZIP ne sadrži stvarne PDF ulaznice niti tajne. Sama izgradnja koda nije zamjena za produkcijski sigurnosni test.
