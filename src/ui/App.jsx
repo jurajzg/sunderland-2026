@@ -1,4 +1,4 @@
-import React,{useEffect,useState} from 'react';
+import React,{useState} from 'react';
 import {Menu, X, MapPin, Plane, TrainFront, BedDouble, Ticket, CalendarDays, Utensils, CloudSun, ShieldCheck, Lock, ExternalLink} from 'lucide-react';
 import {trip,flights,trains,itinerary,pubs} from '../data';
 const nav=[['Početna','home'],['Letovi','flights'],['Vlakovi','trains'],['Smještaj','stay'],['Utakmica','match'],['Plan putovanja','plan'],['Pubovi i restorani','pubs'],['Vrijeme','weather']];
@@ -18,50 +18,9 @@ function App(){
   {page==='match'&&<Section title="Utakmica" sub="MATCHDAY · 05.11.2026"><div className="match-card"><div className="team">SUNDERLAND</div><div className="versus">VS</div><div className="team dinamo">DINAMO<br/>ZAGREB</div><div className="match-meta">STADIUM OF LIGHT · 20:00 · ČETVRTAK</div></div><TicketAccess/></Section>}
   {page==='plan'&&<Section title="Plan putovanja" sub="ČETVRTAK · 5. STUDENOGA"><div className="timeline">{itinerary.map((x,i)=><div className="event" key={i}><b>{x[0]}</b><div><strong>{x[1]}</strong><p>{x[2]}</p></div></div>)}</div><div className="notice">Petak, 6. 11.: povratak iz Newcastlea. Let FR21 polazi u 14:55, a FR2192 iz Dublina u 19:15.</div></Section>}
   {page==='pubs'&&<Section title="Pubovi i restorani" sub="FOOD · DRINK · MATCHDAY">{pubs.map(p=><div className="feature" key={p.name}><div><h3>{p.name}</h3><p>{p.desc}</p></div><Utensils size={34}/></div>)}</Section>}
-  {page==='weather'&&<Section title="Vrijeme" sub="SUNDERLAND · 5–6.11.2026"><WeatherForecast/></Section>}
+  {page==='weather'&&<Section title="Vrijeme" sub="SUNDERLAND · 5–6.11.2026"><div className="notice">Pouzdana prognoza za studeni još nije dostupna dovoljno unaprijed. Ovdje ćemo prikazati prognozu kada bude vremenski relevantna; ne prikazujemo izmišljene podatke.</div></Section>}
   <footer><span>SUNDERLAND 2026</span><span>JURAJ & BUCO · PRIVATE TRIP</span></footer></main></div></div>
 }
-
-const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast?latitude=54.9069&longitude=-1.3838&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=Europe%2FLondon&start_date=2026-11-05&end_date=2026-11-06';
-const weatherLabels = code => {
- if(code===0) return 'Vedro';
- if([1,2].includes(code)) return 'Pretežno vedro';
- if(code===3) return 'Oblačno';
- if([45,48].includes(code)) return 'Magla';
- if([51,53,55,56,57].includes(code)) return 'Rosulja';
- if([61,63,65,66,67,80,81,82].includes(code)) return 'Kiša';
- if([71,73,75,77,85,86].includes(code)) return 'Snijeg';
- if([95,96,99].includes(code)) return 'Grmljavinsko nevrijeme';
- return 'Promjenjivo';
-};
-function WeatherForecast(){
- const [forecast,setForecast]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState(false);
- useEffect(()=>{
-  const controller=new AbortController();
-  fetch(WEATHER_URL,{signal:controller.signal})
-   .then(r=>{if(!r.ok) throw new Error('Weather API unavailable'); return r.json();})
-   .then(data=>{
-    const d=data.daily;
-    if(!d || !Array.isArray(d.time) || d.time.length!==2) throw new Error('Forecast not available');
-    setForecast(d.time.map((date,i)=>({date,code:d.weather_code?.[i],max:d.temperature_2m_max?.[i],min:d.temperature_2m_min?.[i],rain:d.precipitation_probability_max?.[i],wind:d.wind_speed_10m_max?.[i]})));
-   })
-   .catch(e=>{if(e.name!=='AbortError') setError(true);})
-   .finally(()=>setLoading(false));
-  return ()=>controller.abort();
- },[]);
- const dateLabel=date=>new Date(`${date}T12:00:00`).toLocaleDateString('hr-HR',{weekday:'long',day:'numeric',month:'long',timeZone:'Europe/London'});
- if(loading) return <div className="notice">Dohvaćamo aktualnu prognozu za Sunderland…</div>;
- if(error || !forecast || forecast.some(x=>![x.max,x.min].every(Number.isFinite))) return <div className="notice">Prognoza za 5. i 6. studenoga trenutačno nije dostupna. Podatke ćemo prikazati čim ih meteorološki servis objavi; ne prikazujemo izmišljene podatke.</div>;
- return <>
-  <div className="notice">Prognoza se automatski dohvaća iz Open-Meteo servisa. Vrijeme u Sunderlandu (lokalno vrijeme, Europe/London).</div>
-  <div className="cards weather-cards">{forecast.map(day=><article className="info-card weather-card" key={day.date}>
-   <div><b>{dateLabel(day.date)}</b><small>{weatherLabels(day.code)}</small><strong className="weather-temp">{Math.round(day.max)}° / {Math.round(day.min)}°C</strong>
-   <small>Vjerojatnost oborina: {Number.isFinite(day.rain)?`${day.rain}%`:'—'}</small><small>Maks. vjetar: {Number.isFinite(day.wind)?`${Math.round(day.wind)} km/h`:'—'}</small></div>
-  </article>)}</div>
-  <p className="muted">Prognoza je promjenjiva i može se ažurirati. Provjeri je ponovno neposredno prije polaska.</p>
- </>;
-}
-
 function Info({title,text,icon,click}){return <button className="info-card" onClick={click}><span>{icon}</span><div><b>{title}</b><small>{text}</small></div><i>↗</i></button>}
 function Section({title,sub,children}){return <section className="section page-section"><div className="eyebrow">{sub}</div><h2>{title}</h2>{children}</section>}
 function TicketAccess(){return <div className="ticket-box"><div className="ticket-lock"><Lock/></div><div><b>Privatne ulaznice</b><p>PDF ulaznice bit će dostupne nakon postavljanja sigurnog PIN sustava.</p></div><span className="status">ZAKLJUČANO</span></div>}
